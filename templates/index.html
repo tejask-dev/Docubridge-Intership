@@ -6,6 +6,15 @@
 <body>
   <h1>Financial Modeling Assistant</h1>
   <p>Upload a financial model and ask questions about it.</p>
-  <!-- Placeholder for Q&A interface -->
+
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label for="file">Choose a financial model file:</label><br>
+    <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required><br><br>
+
+    <label for="user_question">Ask a question:</label><br>
+    <input type="text" id="user_question" name="user_question" required><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
 </body>
 </html>
