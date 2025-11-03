@@ -46,9 +46,15 @@ export const theme = createTheme({
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
-      fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' },
+      fontSize: '3.5rem',
       fontWeight: 700,
       lineHeight: 1.2,
+      [theme.breakpoints.down('md')]: {
+        fontSize: '2.5rem',
+      },
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '2rem',
+      },
     },
     h2: {
       fontSize: '2.75rem',
