@@ -49,10 +49,10 @@ export const theme = createTheme({
       fontSize: '3.5rem',
       fontWeight: 700,
       lineHeight: 1.2,
-      [theme.breakpoints.down('md')]: {
+      '@media (max-width:960px)': {
         fontSize: '2.5rem',
       },
-      [theme.breakpoints.down('sm')]: {
+      '@media (max-width:600px)': {
         fontSize: '2rem',
       },
     },
