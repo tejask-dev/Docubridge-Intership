@@ -1,0 +1,72 @@
+{
+  "name": "docubridge-ai-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.19",
+    "@mui/material": "^5.14.19",
+    "@react-spring/web": "^9.7.3",
+    "axios": "^1.6.2",
+    "countup.js": "^2.6.2",
+    "framer-motion": "^10.16.16",
+    "plotly.js": "^2.26.0",
+    "react": "^18.2.0",
+    "react-countup": "^6.5.0",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hot-toast": "^2.4.1",
+    "react-intersection-observer": "^9.5.3",
+    "react-markdown": "^9.0.1",
+    "react-plotly.js": "^2.6.0",
+    "react-scripts": "5.0.1",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.0",
+    "styled-components": "^6.1.3",
+    "typescript": "^4.9.5",
+    "web-vitals": "^3.5.0"
+  },
+  "scripts": {
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true TSC_COMPILE_ON_ERROR=true DISABLE_ESLINT_PLUGIN=true react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "node scripts/fix-ajv.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/plotly.js": "^2.12.29",
+    "@types/react-plotly.js": "^2.6.3",
+    "@types/styled-components": "^5.1.34",
+    "cross-env": "^7.0.3"
+  },
+  "resolutions": {
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0"
+  },
+  "overrides": {
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0"
+  }
+}
+

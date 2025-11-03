@@ -15,10 +15,12 @@ git push origin master  # or main
 - Connect GitHub repo: `tejask-dev/Docubridge-Intership`
 - **Root Directory**: `Backend`
 - **Build Command**: `pip install -r requirements.txt`
-- **Start Command**: 
-  ```bash
+- **Start Command** (copy this EXACT text, without "bash"):
+  ```
   mkdir -p uploads charts logs && gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 app:app
   ```
+  
+  ⚠️ **Note**: Just copy the command line, NOT the word "bash" - that's just documentation formatting.
 
 **Environment Variables:**
 ```

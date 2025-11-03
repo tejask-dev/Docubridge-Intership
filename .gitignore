@@ -129,7 +129,12 @@ charts/
 *.xlsx
 *.xls
 *.csv
+# Ignore data JSON files but NOT package.json
 *.json
+!package.json
+!**/package.json
+!tsconfig.json
+!**/tsconfig.json
 
 # Flask
 instance/
@@ -240,3 +245,6 @@ $RECYCLE.BIN/
 *.xls
 leaderboard.csv
 Backend/leaderboard.csv
+# But keep package.json files (they're needed for deployment)
+!package.json
+!**/package.json
