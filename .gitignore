@@ -129,12 +129,14 @@ charts/
 *.xlsx
 *.xls
 *.csv
-# Ignore data JSON files but NOT package.json
+# Ignore data JSON files but NOT config files
 *.json
 !package.json
 !**/package.json
 !tsconfig.json
 !**/tsconfig.json
+!vercel.json
+!**/vercel.json
 
 # Flask
 instance/
