@@ -4,10 +4,12 @@
 
 1. **Create .env file** in the Backend directory:
    ```
-   OPENROUTER_API_KEY=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
-   FLASK_SECRET_KEY=your-super-secret-key-here-make-it-long-and-random-12345
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   FLASK_SECRET_KEY=your-super-secret-key-here-make-it-long-and-random-minimum-32-characters
    FLASK_ENV=development
    ```
+   
+   **⚠️ IMPORTANT:** Never commit your `.env` file or API keys to git! Get your OpenRouter API key from [openrouter.ai/keys](https://openrouter.ai/keys)
 
 2. **Install Python dependencies**:
    ```bash
