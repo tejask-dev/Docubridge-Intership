@@ -605,8 +605,9 @@ def analyze():
         }))
         
     except Exception as e:
-        logging.error("Analysis error:", exc_info=True)
-        return jsonify({"error": "Analysis failed. Please check your file format."}), 400
+        error_msg = str(e)
+        logging.error(f"Analysis error: {error_msg}", exc_info=True)
+        return jsonify({"error": f"Analysis failed: {error_msg}. Please check your file format."}), 400
 
 @app.route("/forecast", methods=["POST"])
 def forecast():
