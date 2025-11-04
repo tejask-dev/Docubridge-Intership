@@ -54,8 +54,10 @@ if not secret:
 app.secret_key = secret
 
 # CORS configuration - allow frontend origin from environment or default to localhost
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
-CORS(app, supports_credentials=True, origins=CORS_ORIGINS)
+CORS_ORIGINS_STR = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()]
+logging.info(f"CORS origins configured: {CORS_ORIGINS}")
+CORS(app, supports_credentials=True, origins=CORS_ORIGINS, methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"], allow_headers=["Content-Type", "Authorization"])
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
