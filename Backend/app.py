@@ -561,7 +561,17 @@ def analyze():
     file_ext = session.get("file_ext")
     sheet_name = session.get("selected_sheet")
     
-    if not data_path or not os.path.exists(data_path):
+    logging.info(f"Analyze request - data_path: {data_path}, file_ext: {file_ext}, sheet_name: {sheet_name}")
+    
+    if not data_path:
+        logging.error("No data_path in session")
+        return jsonify({"error": "No file uploaded. Please upload a file first."}), 400
+    
+    if not os.path.exists(data_path):
+        logging.error(f"File not found at path: {data_path}")
+        logging.error(f"Current working directory: {os.getcwd()}")
+        logging.error(f"Upload folder exists: {os.path.exists(app.config['UPLOAD_FOLDER'])}")
+        logging.error(f"Upload folder contents: {os.listdir(app.config['UPLOAD_FOLDER']) if os.path.exists(app.config['UPLOAD_FOLDER']) else 'N/A'}")
         return jsonify({"error": "File not found. Please re-upload."}), 400
     
     try:
