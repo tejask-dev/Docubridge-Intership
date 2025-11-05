@@ -53,6 +53,13 @@ if not secret:
     raise RuntimeError("FLASK_SECRET_KEY is not set in .env!")
 app.secret_key = secret
 
+# Configure session cookies for production
+# Set secure=True only in production (HTTPS), allow cross-origin cookies
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Required for cross-origin with credentials
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)  # Session lasts 24 hours
+
 # CORS configuration - allow frontend origin from environment or default to localhost
 CORS_ORIGINS_STR = os.getenv("CORS_ORIGINS", "http://localhost:3000")
 CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()]
@@ -577,6 +584,10 @@ def select_sheet():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     """Comprehensive financial analysis endpoint"""
+    # Debug: Log session info
+    logging.info(f"Analyze request - Session ID: {id(session)}, Session keys: {list(session.keys())}")
+    logging.info(f"Session contents: data_path={session.get('data_path')}, file_ext={session.get('file_ext')}")
+    
     data_path = session.get("data_path")
     file_ext = session.get("file_ext")
     sheet_name = session.get("selected_sheet")
@@ -585,6 +596,7 @@ def analyze():
     
     if not data_path:
         logging.error("No data_path in session")
+        logging.error(f"Available session keys: {list(session.keys())}")
         return jsonify({"error": "No file uploaded. Please upload a file first."}), 400
     
     if not os.path.exists(data_path):
