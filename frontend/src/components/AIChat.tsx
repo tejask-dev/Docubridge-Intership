@@ -98,7 +98,7 @@ const AIChat: React.FC<AIChatProps> = ({ isVisible, onShowGallery, fileId }) => 
 
     try {
       console.log('Sending request to backend...');
-      let response = await api.aiChat(inputValue);
+      let response = await api.aiChat(inputValue, fileId || undefined);
       console.log('=== FULL RESPONSE DEBUG ===');
       console.log('AI Chat Response (raw):', response);
       console.log('Response type:', typeof response);
