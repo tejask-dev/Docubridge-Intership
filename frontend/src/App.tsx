@@ -295,8 +295,9 @@ const App: React.FC = () => {
 
   const handleAnalyze = async (fileIdParam?: string, sheetNameParam?: string) => {
     // Use passed params or state
-    const idToUse = fileIdParam || fileId;
-    const sheetToUse = sheetNameParam || selectedSheet;
+    // Ensure we only use string values (not event objects accidentally passed)
+    const idToUse = (fileIdParam && typeof fileIdParam === 'string') ? fileIdParam : fileId;
+    const sheetToUse = (sheetNameParam && typeof sheetNameParam === 'string') ? sheetNameParam : selectedSheet;
     
     if (!file && !idToUse) return;
 
