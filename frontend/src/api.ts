@@ -41,6 +41,7 @@ export const api = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 120000, // 120 seconds - file uploads can take time for large files
     });
     return response.data;
   },

@@ -518,34 +518,49 @@ def convert_np(obj):
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files.get("file")
-    if not file:
-        return jsonify({"error": "No file selected."}), 400
-    
-    filename = secure_filename(file.filename)
-    file_ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ""
-    
-    if not allowed_file(filename):
-        return jsonify({"error": "Invalid file type. Only Excel (.xls/.xlsx) or CSV files are allowed."}), 400
-    
-    temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(temp_path)
-    
-    session["data_path"] = temp_path
-    session["file_ext"] = file_ext
-    session["filename"] = filename
-    
-    sheet_names = list_excel_sheets(temp_path, file_ext)
-    session["sheet_names"] = sheet_names
-    session["selected_sheet"] = sheet_names[0] if sheet_names else None
-    session["qna_history"] = []
-    session["chart_images"] = []
-    
-    return jsonify({
-        "sheet_names": sheet_names, 
-        "selected_sheet": session["selected_sheet"],
-        "filename": filename
-    })
+    try:
+        logging.info("Upload request received")
+        file = request.files.get("file")
+        if not file:
+            logging.error("No file in request")
+            return jsonify({"error": "No file selected."}), 400
+        
+        filename = secure_filename(file.filename)
+        file_ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ""
+        logging.info(f"Uploading file: {filename}, type: {file_ext}")
+        
+        if not allowed_file(filename):
+            logging.error(f"Invalid file type: {file_ext}")
+            return jsonify({"error": "Invalid file type. Only Excel (.xls/.xlsx) or CSV files are allowed."}), 400
+        
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        logging.info(f"Saving file to: {temp_path}")
+        file.save(temp_path)
+        logging.info(f"File saved successfully, size: {os.path.getsize(temp_path)} bytes")
+        
+        session["data_path"] = temp_path
+        session["file_ext"] = file_ext
+        session["filename"] = filename
+        
+        logging.info("Listing Excel sheets...")
+        sheet_names = list_excel_sheets(temp_path, file_ext)
+        logging.info(f"Found {len(sheet_names)} sheets: {sheet_names}")
+        
+        session["sheet_names"] = sheet_names
+        session["selected_sheet"] = sheet_names[0] if sheet_names else None
+        session["qna_history"] = []
+        session["chart_images"] = []
+        
+        logging.info("Upload completed successfully")
+        return jsonify({
+            "sheet_names": sheet_names, 
+            "selected_sheet": session["selected_sheet"],
+            "filename": filename
+        })
+    except Exception as e:
+        error_msg = str(e)
+        logging.error(f"Upload error: {error_msg}", exc_info=True)
+        return jsonify({"error": f"Upload failed: {error_msg}"}), 500
 
 @app.route("/select_sheet", methods=["POST"])
 def select_sheet():
