@@ -50,6 +50,7 @@ interface Message {
 interface AIChatProps {
   isVisible: boolean;
   onShowGallery?: () => void;
+  fileId?: string | null;
 }
 
 // Format backend response text for better readability
@@ -65,7 +66,7 @@ const formatResponseText = (text: string): string => {
   return formatted;
 };
 
-const AIChat: React.FC<AIChatProps> = ({ isVisible, onShowGallery }) => {
+const AIChat: React.FC<AIChatProps> = ({ isVisible, onShowGallery, fileId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);

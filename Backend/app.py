@@ -844,13 +844,28 @@ def ai_chat():
     try:
         data = request.get_json()
         question = data.get("question", "")
-        data_path = session.get("data_path")
+        file_id = data.get("file_id")  # Try to get file_id from request
+        
+        # Find file by file_id if provided, otherwise use session
+        if file_id:
+            pattern = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_*")
+            matching_files = glob.glob(pattern)
+            if matching_files:
+                data_path = matching_files[0]
+                logging.info(f"AI chat - Found file by ID: {data_path}")
+            else:
+                logging.error(f"AI chat - File not found for file_id: {file_id}")
+                return jsonify({"error": "File not found. Please upload a file first."}), 400
+        else:
+            # Fallback to session
+            data_path = session.get("data_path")
+            logging.info(f"AI chat - Using session data_path: {data_path}")
         
         if not question:
             return jsonify({"error": "Question is required"}), 400
             
         if not data_path or not os.path.exists(data_path):
-            return jsonify({"error": "No data file uploaded"}), 400
+            return jsonify({"error": "No data file uploaded. Please upload a file first."}), 400
         
         # Load the current data
         df = pd.read_excel(data_path) if data_path.endswith('.xlsx') else pd.read_csv(data_path)

@@ -841,6 +841,7 @@ const App: React.FC = () => {
             <AIChat 
               isVisible={true} 
               onShowGallery={() => setCurrentView('gallery')}
+              fileId={fileId}
             />
           </Box>
         </Container>

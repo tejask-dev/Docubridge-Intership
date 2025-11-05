@@ -105,8 +105,8 @@ export const api = {
   },
 
   // AI Chat
-  aiChat: async (question: string) => {
-    const response = await apiClient.post('/ai_chat', { question }, {
+  aiChat: async (question: string, fileId?: string) => {
+    const response = await apiClient.post('/ai_chat', { question, file_id: fileId }, {
       timeout: 90000, // 90 seconds - AI calls can take longer
       responseType: 'json', // Explicitly request JSON response
     });
