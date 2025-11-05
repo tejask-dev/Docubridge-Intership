@@ -771,7 +771,7 @@ const App: React.FC = () => {
                           <Button
                             variant="contained"
                             startIcon={<Analytics />}
-                            onClick={handleAnalyze}
+                            onClick={() => handleAnalyze()}
                             disabled={isAnalyzing}
                             fullWidth={true}
                             sx={{ 
