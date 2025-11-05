@@ -340,12 +340,17 @@ def allowed_file(filename):
 def list_excel_sheets(filepath, file_ext):
     try:
         if file_ext in ['xls', 'xlsx']:
-            xls = pd.ExcelFile(filepath)
-            return xls.sheet_names
+            logging.info(f"Opening Excel file to list sheets: {filepath}")
+            # Use engine='openpyxl' for .xlsx files for better performance
+            engine = 'openpyxl' if file_ext == 'xlsx' else None
+            xls = pd.ExcelFile(filepath, engine=engine)
+            sheet_names = xls.sheet_names
+            logging.info(f"Successfully listed {len(sheet_names)} sheets")
+            return sheet_names
         else:
             return []
     except Exception as e:
-        logging.warning("Failed to list sheets: %s", e)
+        logging.error(f"Failed to list sheets: {str(e)}", exc_info=True)
         return []
 
 def read_dataframe(file_path, file_ext, sheet_name=None):
