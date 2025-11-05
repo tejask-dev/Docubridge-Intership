@@ -12,6 +12,7 @@ from plotly.utils import PlotlyJSONEncoder
 import json
 import requests
 import warnings
+import glob
 warnings.filterwarnings('ignore')
 
 from flask import Flask, request, session, send_file, jsonify
@@ -545,14 +546,20 @@ def upload():
             logging.error(f"Invalid file type: {file_ext}")
             return jsonify({"error": "Invalid file type. Only Excel (.xls/.xlsx) or CSV files are allowed."}), 400
         
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        # Generate unique filename to avoid conflicts
+        file_id = str(uuid.uuid4())
+        safe_filename = secure_filename(filename)
+        unique_filename = f"{file_id}_{safe_filename}"
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         logging.info(f"Saving file to: {temp_path}")
         file.save(temp_path)
         logging.info(f"File saved successfully, size: {os.path.getsize(temp_path)} bytes")
         
+        # Store in session (for backward compatibility) AND return file_id
         session["data_path"] = temp_path
         session["file_ext"] = file_ext
-        session["filename"] = filename
+        session["filename"] = unique_filename
+        session["file_id"] = file_id
         session.permanent = True  # Make session permanent
         
         logging.info("Listing Excel sheets...")
@@ -566,13 +573,14 @@ def upload():
         
         # Debug: Log session info
         logging.info(f"Session ID: {id(session)}, Session keys: {list(session.keys())}")
-        logging.info(f"Session data_path set: {session.get('data_path')}")
+        logging.info(f"Session data_path set: {session.get('data_path')}, file_id: {file_id}")
         
         logging.info("Upload completed successfully")
         return jsonify({
             "sheet_names": sheet_names, 
             "selected_sheet": session["selected_sheet"],
-            "filename": filename
+            "filename": safe_filename,
+            "file_id": file_id  # Return file_id for stateless requests
         })
     except Exception as e:
         error_msg = str(e)
@@ -589,20 +597,39 @@ def select_sheet():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     """Comprehensive financial analysis endpoint"""
+    # Try to get file_id from request body first (stateless approach)
+    request_data = request.get_json(silent=True) or {}
+    file_id = request_data.get("file_id")
+    
     # Debug: Log session info
+    logging.info(f"Analyze request - file_id from body: {file_id}")
     logging.info(f"Analyze request - Session ID: {id(session)}, Session keys: {list(session.keys())}")
-    logging.info(f"Session contents: data_path={session.get('data_path')}, file_ext={session.get('file_ext')}")
     
-    data_path = session.get("data_path")
-    file_ext = session.get("file_ext")
-    sheet_name = session.get("selected_sheet")
-    
-    logging.info(f"Analyze request - data_path: {data_path}, file_ext: {file_ext}, sheet_name: {sheet_name}")
-    
-    if not data_path:
-        logging.error("No data_path in session")
-        logging.error(f"Available session keys: {list(session.keys())}")
-        return jsonify({"error": "No file uploaded. Please upload a file first."}), 400
+    # If file_id provided, find file by ID; otherwise use session
+    if file_id:
+        # Find file by ID
+        pattern = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_*")
+        matching_files = glob.glob(pattern)
+        if matching_files:
+            data_path = matching_files[0]
+            file_ext = data_path.rsplit('.', 1)[-1].lower() if '.' in data_path else ""
+            # Get sheet name from request or use default
+            sheet_name = request_data.get("sheet_name") or session.get("selected_sheet")
+            logging.info(f"Found file by ID: {data_path}, ext: {file_ext}, sheet: {sheet_name}")
+        else:
+            logging.error(f"File not found for file_id: {file_id}")
+            return jsonify({"error": "File not found. Please upload a file first."}), 400
+    else:
+        # Fallback to session-based approach
+        data_path = session.get("data_path")
+        file_ext = session.get("file_ext")
+        sheet_name = session.get("selected_sheet")
+        logging.info(f"Using session - data_path: {data_path}, file_ext: {file_ext}, sheet_name: {sheet_name}")
+        
+        if not data_path:
+            logging.error("No data_path in session and no file_id provided")
+            logging.error(f"Available session keys: {list(session.keys())}")
+            return jsonify({"error": "No file uploaded. Please upload a file first."}), 400
     
     if not os.path.exists(data_path):
         logging.error(f"File not found at path: {data_path}")

@@ -53,8 +53,11 @@ export const api = {
   },
 
   // Comprehensive analysis
-  analyze: async () => {
-    const response = await apiClient.post('/analyze');
+  analyze: async (fileId?: string, sheetName?: string) => {
+    const response = await apiClient.post('/analyze', {
+      file_id: fileId,
+      sheet_name: sheetName,
+    });
     return response.data;
   },
 

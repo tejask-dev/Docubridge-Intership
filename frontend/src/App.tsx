@@ -215,6 +215,7 @@ interface ChartData {
 
 const App: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [fileId, setFileId] = useState<string | null>(null); // Store file_id from upload
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
@@ -262,11 +263,16 @@ const App: React.FC = () => {
         setSelectedSheet(response.sheet_names[0]);
       }
 
+      // Store file_id for stateless requests
+      if (response.file_id) {
+        setFileId(response.file_id);
+      }
+
       toast.success('File uploaded successfully!');
       
-      // Auto-analyze after upload
+      // Auto-analyze after upload, passing file_id
       setTimeout(() => {
-        handleAnalyze();
+        handleAnalyze(response.file_id, response.sheet_names?.[0]);
       }, 1000);
 
     } catch (error) {
@@ -287,12 +293,16 @@ const App: React.FC = () => {
     multiple: false
   });
 
-  const handleAnalyze = async () => {
-    if (!file) return;
+  const handleAnalyze = async (fileIdParam?: string, sheetNameParam?: string) => {
+    // Use passed params or state
+    const idToUse = fileIdParam || fileId;
+    const sheetToUse = sheetNameParam || selectedSheet;
+    
+    if (!file && !idToUse) return;
 
     setIsAnalyzing(true);
     try {
-      const response = await api.analyze();
+      const response = await api.analyze(idToUse || undefined, sheetToUse || undefined);
       setAnalysisData(response.analysis);
       setCharts(response.charts);
       toast.success('Analysis completed!');
