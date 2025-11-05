@@ -553,6 +553,7 @@ def upload():
         session["data_path"] = temp_path
         session["file_ext"] = file_ext
         session["filename"] = filename
+        session.permanent = True  # Make session permanent
         
         logging.info("Listing Excel sheets...")
         sheet_names = list_excel_sheets(temp_path, file_ext)
@@ -562,6 +563,10 @@ def upload():
         session["selected_sheet"] = sheet_names[0] if sheet_names else None
         session["qna_history"] = []
         session["chart_images"] = []
+        
+        # Debug: Log session info
+        logging.info(f"Session ID: {id(session)}, Session keys: {list(session.keys())}")
+        logging.info(f"Session data_path set: {session.get('data_path')}")
         
         logging.info("Upload completed successfully")
         return jsonify({
